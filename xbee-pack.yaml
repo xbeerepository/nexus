@@ -1,0 +1,51 @@
+schema-version: 1.0
+
+builder: 
+  origin: ./nexus-builder
+  var:
+    version: "{% version %}"
+
+pack: aws-jdk
+
+port: 8081
+
+persistent-dir: data:/opt/sonatype-work/nexus3
+
+var:
+  version: 3.29.2-02
+  adminPassword: password
+  anonymousAccess: true
+
+user: nexus
+
+provision:
+  - copy: 
+      builder: nexus-base-template-{% version %}.zip
+      todir: /opt
+  - unpack: /opt/nexus-base-template-{% version %}.zip
+  - copy:
+      resource: nexus.properties
+      todir: /opt/sonatype-work/nexus3/etc
+  - systempath: /opt/nexus-base-template-{% version %}/bin
+  - permission:
+      paths: 
+        - /opt/nexus-base-template-{% version %}
+        - /opt/sonatype-work
+      owner: nexus
+      recursive: true
+  - command: start
+  - shell: "{{ .templates }}/security.sh"
+
+
+up: start
+down: stop
+
+
+command:
+  start: 
+    cmd: nexus start
+    condition: "{{ .templates }}/teststarted.sh"
+  stop: 
+    cmd: nexus stop
+
+

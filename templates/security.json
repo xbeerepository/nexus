@@ -1,0 +1,5 @@
+{
+    "name": "security",
+    "content": "security.securitySystem.changePassword('admin', '{{ .pack.adminPassword }}');security.setAnonymousAccess({{ .pack.anonymousAccess }})",
+    "type": "groovy"
+}

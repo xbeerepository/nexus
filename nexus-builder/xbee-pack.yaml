@@ -1,0 +1,33 @@
+schema-version: 1.0
+type: builder
+
+pack: maven
+
+#provider:
+#  virtualbox:
+#    memory: 4g
+#    cpu: 2
+
+var:
+  version: 3.29.2-02
+
+provision:
+  - user: default
+  - url: https://github.com/sonatype/nexus-public/archive/release-{% version %}.tar.gz
+  - permission:
+      path: "{% installDir %}/nexus-public-release-{% version %}"
+      owner: default
+      recursive: true
+
+  # - git:
+  #     location: https://github.com/sonatype/nexus-public.git
+  #     tag: "{% version %}"
+  #     directory: /home/default/nexus-public
+  #     user: default
+
+build:
+  - shell:
+      cmd: ./mvnw clean install -DskipTests
+      directory: "{% installDir %}/nexus-public-release-{% version %}"
+      user: default
+  - download: "{% installDir %}/nexus-public-release-{% version %}/assemblies/nexus-base-template/target/nexus-base-template-{% version %}.zip"
